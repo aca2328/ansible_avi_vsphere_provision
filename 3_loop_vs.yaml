@@ -1,0 +1,26 @@
+---
+- hosts: "localhost"
+  connection: "local"
+  roles:
+    - role: "avinetworks.avisdk"
+  vars_files:
+    - "vars.yaml"
+
+  tasks:
+    - debug:
+        msg: loopTask
+    - name: Include task list in play
+      include_tasks: conf_vs.yaml
+      loop:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        - 7
+        - 8
+      loop_control:
+        loop_var: outer_item
+    - debug:
+        msg: done

@@ -1,0 +1,22 @@
+---
+- set_fact: outer_loop="{{outer_item}}"
+- name: "Delete VirtualService"
+  avi_virtualservice:
+    avi_credentials: "{{ avi_credentials | default(omit) }}"
+    api_context: "{{ avi_api_context | default(omit) }}"
+    name: "{{ vs_parameters.name }} {{ outer_item }}"
+    state: absent
+
+- name: "Delete Pool"
+  avi_pool:
+    avi_credentials: "{{ avi_credentials | default(omit) }}"
+    api_context: "{{ avi_api_context | default(omit) }}"
+    name: '{{ vs_parameters.name }} + "-pool" {{ outer_item }}'
+    state: absent
+
+- name: "Delete VSVip"
+  avi_vsvip:
+    avi_credentials: "{{ avi_credentials | default(omit) }}"
+    api_context: "{{ avi_api_context | default(omit) }}"
+    name: '{{ vs_parameters.name }} + "-vip" {{ outer_item }}'
+    state: absent

@@ -1,0 +1,42 @@
+- set_fact: outer_loop="{{outer_item}}"
+- name: "Create VSVip"
+  avi_vsvip:
+    avi_credentials: "{{ avi_credentials | default(omit)}}"
+    api_context: "{{ avi_api_context | default(omit) }}"
+    name: '{{ vs_parameters.name }} + "-vip" {{ outer_item }}'
+    cloud_ref: '{{ "/api/cloud/?name=" + cloud_parameters.name }}'
+    vip:
+      - enabled: true
+        auto_allocate_ip: true
+        ipam_network_subnet: "{{ vs_parameters.ipam_network_subnet }}"
+        vip_id: "1"
+    dns_info:
+      - fqdn: "{{ vs_parameters.fqdn }}"
+  register: vsvip
+- name: "Create Pool"
+  avi_pool:
+    avi_credentials: "{{ avi_credentials | default(omit)}}"
+    api_context: "{{ avi_api_context | default(omit) }}"
+    name: '{{ vs_parameters.name }} + "-pool" {{ outer_item }}'
+    lb_algorithm: LB_ALGORITHM_ROUND_ROBIN
+    servers: "{{ vs_parameters.pool_members }}"
+  register: pool
+- name: "Create Virtual Service"
+  avi_virtualservice:
+    avi_credentials: "{{ avi_credentials | default(omit) }}"
+    api_context: "{{ avi_api_context | default(omit) }}"
+    name: "{{ vs_parameters.name }} {{ outer_item }}"
+    vsvip_ref: "{{ vsvip.obj.url }}"
+    pool_ref: "{{ pool.obj.url }}"
+    application_profile_ref: "/api/applicationprofile/?name=System-Secure-HTTP"
+    services:
+      - enable_ssl: false
+        port: 80
+      - enable_ssl: true
+        port: 443
+    enabled: true
+    se_group_ref: "/api/serviceenginegroup/?name=Default-Group"
+    ssl_key_and_certificate_refs:
+      - "/api/sslkeyandcertificate/?name=System-Default-Cert"
+      - "/api/sslkeyandcertificate/?name=System-Default-Cert-EC"
+    ssl_profile_ref: "/api/sslprofile/?name=System-Standard"
