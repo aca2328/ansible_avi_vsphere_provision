@@ -1,0 +1,118 @@
+avi_admin_password: ""
+
+avi_credentials:
+  controller: ""
+  username: "admin"
+  password: "{{ avi_admin_password }}"
+  api_version: "20.1.2"
+
+system_configuration:
+  dns_configuration:
+    search_domain: ""
+    server_list:
+      - addr: ""
+        type: "V4"
+  ntp_configuration:
+    ntp_servers:
+      - server:
+          addr: ""
+          type: "V4"
+  global_tenant_config:
+    se_in_provider_context: true
+    tenant_access_to_provider_se: true
+    tenant_vrf: false
+
+ipam_config:
+  - name: "PG name"
+    addr: ""
+    mask: 24
+    begin_range: ""
+    end_range: ""
+    add_to_ipam: true
+  - name: "PG name"
+    addr: ""
+    mask: 24
+    begin_range: ""
+    end_range: ""
+    add_to_ipam: true
+
+dns_config:
+  service_domains:
+    - domain_name: ""
+  auth_domains:
+    - ""
+    - ""
+  dns_vip: ""
+
+seg_config:
+  - name: "Default-Group"
+    max_vs_per_se: 100
+    max_se: 5
+    vcpus_per_se: 1
+    memory_per_se: 2048
+    disk_per_se: 15
+    se_name_prefix: ""
+    vcenter_folder: ""
+    vcenter_hosts:
+      host_refs:
+        - "/api/vimgrhostruntime/?name=host01.com"
+        - "/api/vimgrhostruntime/?name=host02.com"
+      include: true
+    cpu_reserve: false
+    mem_reserve: false
+    ha_mode: "HA_MODE_SHARED"
+    algo: "PLACEMENT_ALGO_PACKED"
+    buffer_se: 0
+    se_deprovision_delay: 5
+  - name: "GSLB-Group"
+    max_vs_per_se: 1
+    max_se: 1
+    vcpus_per_se: 1
+    memory_per_se: 2048
+    disk_per_se: 15
+    se_name_prefix: ""
+    vcenter_folder: ""
+    vcenter_hosts:
+      host_refs:
+        - "/api/vimgrhostruntime/?name=host01.com"
+        - "/api/vimgrhostruntime/?name=host02.com"
+      include: true
+    cpu_reserve: false
+    mem_reserve: false
+    ha_mode: "HA_MODE_SHARED"
+    algo: "PLACEMENT_ALGO_PACKED"
+    buffer_se: 0
+    se_deprovision_delay: 5
+
+cloud_parameters:
+  name: '{{ cloud_name | default("Default-Cloud") }}'
+  vcenter: "vcentername.com"
+  username: ""
+  password: ""
+  datacenter: ""
+  management_network: "PG name"
+  management_ip_subnet:
+    ip_addr:
+      addr: ""
+      type: "V4"
+    mask: 24
+  management_gateway: ""
+
+vs_parameters:
+  name: "demo"
+  fqdn: '{{"demo" + dns_config.service_domains[0].domain_name if (dns_config.service_domains|default([]))|length>0 else ""}}'
+  ipam_network_subnet:
+    subnet:
+      ip_addr:
+        type: "V4"
+        addr: ""
+      mask: 24
+  pool_members:
+    - ip:
+        addr: ""
+        type: "V4"
+    - ip:
+        addr: ""
+        type: "V4"
+
+avi_default_password: ""
